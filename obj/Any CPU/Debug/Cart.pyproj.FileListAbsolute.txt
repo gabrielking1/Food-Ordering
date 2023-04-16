@@ -1,0 +1,4 @@
+C:\Users\GABRIEL\django\Cart\obj\Any CPU\Debug\Cart.pyproj.SuggestedBindingRedirects.cache
+C:\Users\GABRIEL\django\Cart\obj\Any CPU\Debug\Cart.pyproj.CoreCompileInputs.cache
+C:\Users\GABRIEL\django\Cart\bin\Microsoft.PythonTools.WebRole.dll
+C:\Users\GABRIEL\django\Cart\bin\wfastcgi.py

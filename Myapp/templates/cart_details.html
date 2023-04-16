@@ -1,0 +1,133 @@
+
+{% extends 'base.html' %}
+{% comment %} <head>
+    <style>
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    
+    td, th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+    
+    tr:nth-child(even) {
+      background-color: forestgreen;
+      color:white;
+    }
+    </style>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    </head> {% endcomment %}
+
+
+
+{% block content %}
+
+
+{% load cart_tag %}
+
+Total Length :: {{request.session.cart|length}}
+
+Cart Detail:
+<table>
+    <tr>
+      <th>product name</th>
+      <th>product price</th>
+      <th> quantity</th>
+      <th>product image</th>
+      <th> total </th>
+    </tr>
+    {% for key,value in request.session.cart.items %}
+    <tr>
+        
+      <td>{{value.name}}</td>
+      <td>{{value.price}}</td>
+      <td style="text-decoration:none;font-size: 40px;">
+        <a href="{% url 'item_decrement' value.product_id %}" style="text-decoration:none;">-</a>
+        {{value.quantity}}
+        <a href="{% url 'item_increment' value.product_id %}" style="text-decoration:none;">+</a></td>
+        
+        
+        <td><img src = "{{value.image}}" width="300px" height = "300px" alt = "mani"></td>
+        <td>{{ value.price|multiply:value.quantity }}<td>
+        <td >
+           <form>
+            {% csrf_token %}                    
+          <span class = "badge badge-danger"
+          style="cursor:pointer"
+          hx-delete = "{% url 'delete' value.product_id %}"
+          hx-target = "#delete"
+          hx-confirm = "Are you sure you want to delete">
+              
+             X
+      </span>
+    </form>
+      </td>
+           
+    </tr>
+    {% endfor %}
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td style="text-decoration:none;font-size: 30px;">Grand total</td>
+        <td style="text-decoration:none;font-size: 30px;">{{sum}}</td>
+    </tr>
+    
+    
+
+    
+</table>
+
+hr>
+        <div class="m-3 p-3">
+            <a href="#" data-toggle="modal" data-target="#exampleModal" class="btn btn-outline-success border rounded  col-lg-3 float-right">Check out</a>
+        </div>
+   </div>
+</div>
+
+
+<!-- modal -->
+
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">
+              Check Out Form
+          </h5>
+          <hr>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="m-2 p-3">
+            <form action="/check-out" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                  <label for="">Address</label>
+                  <input type="text" name="address" id="" class="form-control" placeholder="" aria-describedby="helpId">
+                  
+                </div>
+                <div class="form-group">
+                    <label for="">Phone</label>
+                    <input type="text" name="phone" id="" class="form-control" placeholder="" aria-describedby="helpId">
+                  </div>
+
+                  <input type="submit" class="btn float-right btn-outline-success col-lg-6" value="Check out">
+            </form>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+
+
+{% endblock %}
