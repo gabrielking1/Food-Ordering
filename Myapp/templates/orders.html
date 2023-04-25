@@ -26,6 +26,11 @@
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
     <!-- alertify -->
     <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+
+    <!-- Data Tables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
+    <script  src="https://code.jquery.com/jquery-3.5.1.js"></script>
+	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 </head>
 
 <body>
@@ -81,7 +86,7 @@
                         {%else%}
                         <li><a href="/login" title="" class="cart-ico">Log In <img src="{% static 'assets/images/icons/sign-in.svg' %}" alt=""></a></li>
                         {%endif%}
-                        <li><a href="/register" title="" class="cart-ico">Sign In <img src="{% static 'assets/images/icons/sign-in.svg' %}" alt=""></a></li>
+                        <li><a href="/register" title="" class="cart-ico">Register <img src="{% static 'assets/images/icons/sign-in.svg' %}" alt=""></a></li>
                       </ul><!--oth-lnks end-->
                 </div><!--header-content end-->
               
@@ -117,10 +122,10 @@
             <div class="fixed-bg bg4"></div>
             <div class="container">
                 <div class="pager-head">
-                    <h2>Cart</h2>
+                    <h2>Orders</h2>
                     <ul>
                         <li><a href="{% url 'home' %}" title="">Home</a></li>
-                        <li><span>Cart</span></li>
+                        <li><span>Order Lists</span></li>
                     </ul>
                 </div><!--pager-head end-->
             </div>
@@ -130,7 +135,7 @@
             <div class="container">
                 <div class="cart-page">
                  
-                    <table>
+                    <table id="example" class="display">
                         <thead>
                             <tr>
                                 <th>Sno.</th>
@@ -163,8 +168,12 @@
                             {% endfor %}
                         </tbody>
                     </table>
+
                     
-                   
+	
+                       
+                       
+                        </div>
                 </div><!--cart-page end-->
             </div>
         </section>
@@ -232,10 +241,15 @@
 </div><!--wrapper end-->
 
 
-<script src="{% static 'assets/js/jquery.min.js' %}"></script>
+{% comment %} <script src="{% static 'assets/js/jquery.min.js' %}"></script> {% endcomment %}
 <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
 <script src="{% static 'assets/js/lib/slick/slick.js' %}"></script>
 <script src="{% static 'assets/js/isotope.js' %}"></script>
 <script src="{% static 'assets/js/scripts.js' %}"></script>
+<script>
+$(document).ready(function () {
+    $('#example').DataTable();
+});
+</script>   
 </body>
 </html>

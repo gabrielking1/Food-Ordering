@@ -24,6 +24,8 @@ urlpatterns = [
     path('restaurant_details/<slug:slug>',views.restaurant_details, name = 'restaurant-details'),
     path('delete/<str:product_id>', views.delete, name = 'delete'),
     path('ratings/', include('star_ratings.urls', namespace='ratings')),
+    path('payment/', views.payment, name = "payment"),
+    path('<str:ref>', views.verify, name="verify")
     
 ]
 

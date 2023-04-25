@@ -143,3 +143,8 @@ MESSAGE_TAGS = {
     messages.WARNING: 'alert-warning',
     messages.ERROR: 'alert-danger',
 }
+
+SESSION_SAVE_EVERY_REQUEST = True
+
+PAYSTACK_SECRET_KEY = "sk_test_9697a702c5a1cf085d6607d4c84a69f57e8899f5"
+PAYSTACK_PUBLIC_KEY = "pk_test_2bb6e8481201b3ce548e6d8b020c721f6fab40ee"

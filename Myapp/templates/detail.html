@@ -25,9 +25,9 @@
 
 <body>
 
-    <div class="page-loading">
+    {% comment %} <div class="page-loading">
         <img src="{% static 'assets/images/loader.gif' %}" alt="" />
-    </div><!--page-loading end-->
+    </div><!--page-loading end--> {% endcomment %}
 
     <div class="wrapper">
 
@@ -136,7 +136,10 @@
                         <p style="margin-left: 150px;
                       
                        
-                        padding: 10px"><a href="{% url 'cart_add' product.id %}" title="" class="btn-default gradient-bg half-radius height-2">Add to Cart <span></span></a></p>
+                        padding: 10px"><span hx-get="{% url 'cart_add' product.id %}"  title="" class="btn-default gradient-bg half-radius height-2" hx-trigger="click" hx-target= "body">Add to Cart <span></span></span></p>
+                    
+
+                        {% comment %} <button class="add-to-cart-btn" data-product-id="{{ product.id }}">Add to Cart</button></p> {% endcomment %}
                     </div>
                 </div><!--restaurant-details end-->
             </div>
@@ -300,6 +303,28 @@
         <script src="{% static 'assets/js/lib/slick/slick.js' %}"></script>
         <script src="{% static 'assets/js/isotope.js' %}"></script>
         <script src="{% static 'assets/js/scripts.js' %}"></script>
-        <script src="https://unpkg.com/htmx.org@1.6.1/dist/htmx.min.js"></script>
+        <script src="https://unpkg.com/htmx.org@1.9.0" integrity="sha384-aOxz9UdWG0yBiyrTwPeMibmaoq07/d3a96GCbb9x60f3mOt5zwkjdbcHFnKH8qls" crossorigin="anonymous"></script>
+
+        <script>
+            $(document).ready(function() {
+                $('.add-to-cart-btn').click(function(event) {
+                    event.preventDefault();
+                    var productId = $(this).data('product-id');
+                    var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();  // Get the CSRF token value from the HTML form
+                    $.ajax({
+                        url: "{% url 'cart_add' product.id %}",
+                        type: 'POST',
+                        data: {'product_id': productId, 'csrfmiddlewaretoken': csrfToken},  // Include the CSRF token in the request data
+                        dataType: 'json',
+                        success: function(data) {
+                            // Update the cart count element with the number of items in the cart
+                            $('.cart-item-num').text(Object.keys(data.cart).length);
+                            
+                        }
+                    });
+                });
+            });
+                
+    </script>
     </body>
     </html>

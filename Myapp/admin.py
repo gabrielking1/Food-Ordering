@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product,Category,Order,Rating,Feedback
+from .models import Product,Category,Order,Rating,Feedback, Payment
 from django.contrib import messages
 from django.utils.translation import ngettext
 from django.utils.html import format_html
@@ -58,3 +58,4 @@ class RatingAdmin(admin.ModelAdmin):
 
 admin.site.register(Order, OrderAdmin)
 admin.site.register(Rating, RatingAdmin)
+admin.site.register(Payment)

@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Feedback
+from .models import Feedback, Payment
 
 # Create your forms here.
 
@@ -16,7 +16,7 @@ class RegForm(UserCreationForm):
 	# 	user = super(RegForm, self).save(commit=False)
 	# 	user.email = self.cleaned_data['email']
 	# 	if commit:
-	# 		user.save()
+	# 		user.save() 
 	# 	return user
 
 
@@ -26,3 +26,8 @@ class FeedbackForm(forms.ModelForm):
 	class Meta:
 		model = Feedback
 		fields = "__all__"
+
+class PaymentForm(forms.ModelForm):
+	class Meta:
+		model = Payment
+		fields = ("amount","email","username","address","phone",)

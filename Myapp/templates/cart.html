@@ -1,5 +1,6 @@
 {% load static %}
 {% load cart_tag%}
+{% load crispy_forms_tags%}
 <!doctype html>
 <html lang="en">
 
@@ -26,13 +27,136 @@
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
     <!-- alertify -->
     <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+    <!-- Data Tables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"/>
+    <script  src="https://code.jquery.com/jquery-3.5.1.js"></script>
+	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <style>
+        /* Full-width input fields */
+input[type=text], input[type=password] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+/* Set a style for all buttons */
+button {
+  {% comment %} background-color: #04AA6D; {% endcomment %}
+  background-color: #6495ED;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+/* Extra styles for the cancel button */
+.cancelbtn {
+  width: auto;
+  padding: 10px 18px;
+  background-color: #f44336;
+}
+
+/* Center the image and position the close button */
+.imgcontainer {
+  text-align: center;
+  margin: 24px 0 12px 0;
+  position: relative;
+}
+
+img.avatar {
+  width: 40%;
+  border-radius: 50%;
+}
+
+.container {
+  padding: 16px;
+}
+
+span.psw {
+  float: right;
+  padding-top: 16px;
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  padding-top: 60px;
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button (x) */
+.close {
+  position: absolute;
+  right: 25px;
+  top: 0;
+  color: #000;
+  font-size: 35px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: red;
+  cursor: pointer;
+}
+
+/* Add Zoom Animation */
+.animate {
+  -webkit-animation: animatezoom 0.6s;
+  animation: animatezoom 0.6s
+}
+
+@-webkit-keyframes animatezoom {
+  from {-webkit-transform: scale(0)} 
+  to {-webkit-transform: scale(1)}
+}
+  
+@keyframes animatezoom {
+  from {transform: scale(0)} 
+  to {transform: scale(1)}
+}
+
+/* Change styles for span and cancel button on extra small screens */
+@media screen and (max-width: 300px) {
+  span.psw {
+     display: block;
+     float: none;
+  }
+  .cancelbtn {
+     width: 100%;
+  }
+}
+</style>
 </head>
 
 <body>
 
-    <div class="page-loading">
-        <img src="{% static 'assets/images/loader.gif' %}" alt="" />
-    </div><!--page-loading end-->
+    
 
     <div class="wrapper">
 
@@ -128,7 +252,7 @@
         <section class="sec-block">
             <div class="container">
                 <div class="cart-page" id="delete">
-                    <table>
+                    <table id="example" class="display">
                         <thead>
                             <tr>
                                 <th>Product</th>
@@ -139,30 +263,30 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for key,value in request.session.cart.items %}
+                            {% for key,item in request.session.cart.items %}
                             <tr>
                                 <td>
                                     <div class="cart-prod-info d-flex flex-wrap align-items-center">
-                                        <img src="{{value.image}}" alt="">
+                                        <img src="{{item.image}}" alt="">
                                         <div class="cart-pro-info">
-                                            <h4>{{value.name}}</h4>
+                                            <h4>{{item.name}}</h4>
                                     
                                         </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="item-counter">
-                                        <div class="quantity" style="text-align:center;margin:3px;color:black">
+                                    <div class="item-counter" id = "item-counter">
+                                        <div class="price" style="text-align:center;margin:3px;color:black">
                                             
-                                          
-
-                                            <a href="{% url 'item_decrement' value.product_id %}" style="text-decoration:none;float:left">
+                                            {%if item.quantity > 0 %}
+                                            <span hx-get="{% url 'item_decrement' item.product_id %}" hx-trigger="click" class="increment" hx-target= "body" style="text-decoration:none;float:left" >
                                                 <i class="fa fa-minus"></i>
-                                            </a>
-                                            {{value.quantity}}
-                                            <a href="{% url 'item_increment' value.product_id %}" style="text-decoration:none;float:right">
+                                            </span>
+                                            {%endif%}
+                                            {{item.quantity}}
+                                            <span hx-get="{% url 'item_increment' item.product_id %}" hx-trigger="click" class="increment" hx-target= "body" style="text-decoration:none;float:right" >
                                                 <i class="fa fa-plus"></i>
-                                            </a>
+                                            </span>
                                                 
                                                 
                                                 
@@ -170,21 +294,23 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="price" style="color:black">${{value.price}}</span>
+                                    <span class="price" style="color:black">${{item.price}}</span>
                                 </td>
                                 <td>
-                                    <strong class="sub-total">${{ value.price|multiply:value.quantity }}</strong>
+                                    <strong class="sub-total">${{ item.price|multiply:item.quantity }}</strong>
                                 </td>
                                 <td >
                                     <form
                                         
                                        
                                         style="cursor:pointer"
-                                        action = "{% url 'delete' value.product_id %}"
+                                        hx-get = "{% url 'delete' item.product_id %}"
                                         hx-target = "body"
                                         hx-confirm = "Are you sure you want to delete">
                                         
-                                        <span class = "badge badge-danger"><button type="submit">  X </button>
+                                        <span ><button type="submit" style="background-color:white"> 
+                                            <svg id="SvgjsSvg1063" width="38" height="38" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs"><defs id="SvgjsDefs1064"></defs><g id="SvgjsG1065"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="30">
+                                                <path fill="#d03212" d="M7 18a1 1 0 0 1-.707-1.707l10-10a1 1 0 0 1 1.414 1.414l-10 10A.997.997 0 0 1 7 18Z" class="color6563ff svgShape"></path><path fill="#d03212" d="M17 18a.997.997 0 0 1-.707-.293l-10-10a1 1 0 0 1 1.414-1.414l10 10A1 1 0 0 1 17 18Z" class="color6563ff svgShape"></path></svg></g></svg>  </button>
                                         </span>
                                     </form>
 
@@ -192,16 +318,19 @@
                             </tr>
                             {%endfor%}
                             
-                            </tr>
+                        
                         </tbody>
                     </table>
                     
                     <div class="row justify-content-end">
+                        <h1 style = "color:black;font-size:18px;" >Payment Options</h1>
+                        
                         <div class="col-lg-5">
+                            
                             <div class="price-table">
                                 <ul>
                                      <li style="color:black">
-                                        transfer your payment to:<br>
+                                       Bank Transfer<br>
                                        Account number  0156637353<br>
                                        Account name Falade Gbenga  <br>
                                        Bank name : GT Bank 
@@ -216,34 +345,58 @@
                                         <span class="total-price">${{sum}}</span>
                                     </li>
                                 </ul>
-                                <a href="#" data-toggle="modal" data-target="#exampleModal"class="btn-default text-center w-100">Checkout <span></span></a>
+                                <button onclick="document.getElementById('id01').style.display='block'" style="width:auto;" class="btn-default text-center w-100">Check Out</button>
+                                
+                            </div><!--price-table end-->
+                        </div>
+                        <div class="col-lg-5">
+                            <div class="price-table">
+                                <ul>
+                                     <li style="color:black">
+                                       <h5>Online Payment</h5>
+                                       <br>
+                                       <hr>
+                                      
+                                       <hr>
+                                       <p>Your details are totally secured</p>
+                                       <br>
+
+                                    </li>
+                                    {% comment %} <li>
+                                        <h4 class="delivery">Delivery</h4>
+                                        <span>$25</span>
+                                    </li> {% endcomment %}
+                                    <li>
+                                        <h4 class="total-price">Total</h4>
+                                        <span class="total-price">${{sum}}</span>
+                                    </li>
+                                </ul>
+                                
+                                <button onclick="document.getElementById('id00').style.display='block'" style="width:auto;" class="btn-default text-center w-100">Pay Now</button>
                             </div><!--price-table end-->
                         </div>
                     </div>
                 </div><!--cart-page end-->
             </div>
+        </div>
         </section>
 
-        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="exampleModalLabel">
-                      Check Out Form
-                  </h5>
-                  <hr>
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  <div class="m-2 p-3">
-                    <form action="/check-out" method="POST" enctype="multipart/form-data">
-                        {% csrf_token %}
+       
+        <div class="container">
+            <div id="id01" class="modal" style="width:auto">
+            
+                <form class="modal-content animate" action="/check-out" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="imgcontainer">
+                    <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
+                    <h3> Bank Transfer </h3>
+                    </div>
+
+                
                         <div class="form-group">
-                          <label for="">Address</label>
-                          <input type="text" name="address" id="" class="form-control" placeholder="" aria-describedby="helpId">
-                          
+                        <label for="">Address</label>
+                        <input type="text" name="address" id="" class="form-control" placeholder="" aria-describedby="helpId">
+                        
                         </div>
                         <div class="form-group">
                             <label for="">Phone</label>
@@ -253,19 +406,44 @@
                             <label style="color:black"> Upload proof of payment </labe>
                             <input type="file" name="proof">
                             <!-- <a href="#" class="button soft-warning small"> Choose file</a> -->
-                          
+                        
                             <br>
-                          
-        
-                          <input type="submit" class="btn float-right btn-outline-success col-lg-6" value="Check out">
-                    </form>
-                  </div>
-                </div>
-                
-              </div>
-            </div>
+                        
 
+                    
+                    </div>
+
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-primary">Check Out</button>
+                    <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
+                    
+                    </div>
+                </form>
+            </div>
         </div>
+        
+
+    <div id="id00" class="modal" >
+        <span onclick="document.getElementById('id00').style.display='none'" class="close" title="Close Modal">&times;</span>
+        <form class="modal-content" action="/payment/" method='post'>
+            {% csrf_token %}
+            <div class="container">
+            <h1>Online Payment</h1>
+            <p>Please make your payment here.</p>
+            <hr>
+            {{form|crispy}}
+            
+           
+             
+
+            <div class="clearfix">
+              <button type="submit" class="signupbtn" style="width:auto">Pay Now</button>
+                <button type="button" onclick="document.getElementById('id00').style.display='none'" class="cancelbtn">Cancel</button>
+                
+            </div>
+            </div>
+        </form>
+    </div>
 
 
 <br>
@@ -327,11 +505,11 @@
 
 </div><!--wrapper end-->
 
-
-<script src="{% static 'assets/js/jquery.min.js' %}"></script>
+<script src="{% static 'assets/js/jquery.min.js' %}"></script> 
 <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
 <script src="{% static 'assets/js/lib/slick/slick.js' %}"></script>
 <script src="{% static 'assets/js/isotope.js' %}"></script>
 <script src="{% static 'assets/js/scripts.js' %}"></script>
+<script src="https://unpkg.com/htmx.org@1.9.0" integrity="sha384-aOxz9UdWG0yBiyrTwPeMibmaoq07/d3a96GCbb9x60f3mOt5zwkjdbcHFnKH8qls" crossorigin="anonymous"></script>
 </body>
 </html>

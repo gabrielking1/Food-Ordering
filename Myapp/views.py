@@ -1,9 +1,10 @@
+from django.conf import settings
 from django.shortcuts import render
 from django.contrib.auth.forms import UserCreationForm 
-from .models import Product,Order
+from .models import Product,Order, Payment
 from django.contrib.auth.models import User, auth
 from django.contrib.auth import authenticate
-from .forms import RegForm, FeedbackForm
+from .forms import RegForm, FeedbackForm, PaymentForm
 from django.contrib.auth import login,authenticate
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
@@ -14,7 +15,9 @@ from django.views import View
 from .filters import *
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+from django.template.loader import render_to_string
 # Create your views here.
 
 from django.shortcuts import render, redirect
@@ -88,10 +91,23 @@ def cart_detail(request):
         print("this is combined ",c)
         sum+=c
         print("this is total sum",sum)
-    return render(request, 'cart.html',{'sum':sum})
-    # else:
-    #     messages.error(request, "login or sign up to view your cart")
-    #     return redirect('home')
+    form = PaymentForm(request.POST)
+
+    if form.is_valid():
+        payment = form.save()
+        
+        
+        return render(request, 'make-pay.html', {'payment':payment,'amount_value': payment.amount_value()})
+        
+    
+    else:
+        
+        form = PaymentForm(initial = {'username':request.user,'email':request.user.email,'amount':sum})
+        return render(request,'cart.html',{'form':form,'sum':sum})
+        # html = render_to_string('cart.html', {'cart': cart,'form':form,'sum':sum})
+        # data = {'html': html, 'total': cart.get_total_price()}
+        # return JsonResponse(data)
+   
 
 
 
@@ -157,6 +173,10 @@ def logout(request):
 
 def details(request, slug):
     try:
+        cart = request.session.get('cart', {})
+
+# Get the number of items in the cart
+        num_items = len(cart)
         product = Product.objects.get(slug=slug)
         feedback = Feedback.objects.filter(product_id=product)
         count =  feedback.count()
@@ -175,10 +195,10 @@ def details(request, slug):
             else:
                 messages.error(request, 'something no clear ')
                 form = FeedbackForm(initial = {'username':request.user.id,'product':product})
-                return render(request, 'detail.html', {'product': product,'form':form,'feedback':feedback,'count':count})
+                return render(request, 'detail.html', {'product': product,'form':form,'feedback':feedback,'count':count,'num_items':num_items})
         else:
             form = FeedbackForm(initial = {'username':request.user.id,'product':product})
-        return render(request, 'detail.html', {'product': product,'form':form,'feedback':feedback,'count':count})
+        return render(request, 'detail.html', {'product': product,'form':form,'feedback':feedback,'count':count,'num_items':num_items})
     except:
         messages.error(request,'register to have full access ')
         return redirect('register')
@@ -250,3 +270,72 @@ def delete(request, product_id):
     request.session.modified = True
 
     return redirect('cart-detail')
+
+
+def payment(request):
+    if request.user.is_authenticated:
+        sum = 0.0
+        cart = Cart(request)
+        for key,value in request.session.get('cart').items():
+            # print("this is price",value['price'])
+            c = float(value['price'])*float(value['quantity'])
+            print("this is combined ",c)
+            sum+=c
+            print("this is total sum",sum)
+    
+    
+        pk = settings.PAYSTACK_PUBLIC_KEY
+        if request.method == 'POST':
+
+            form = PaymentForm(request.POST)
+    
+            if form.is_valid():
+                payment = form.save()
+             
+                
+                return render(request, 'make-pay.html', {'payment':payment,'amount_value': payment.amount_value()})
+                
+            
+            else:
+                return render(request,'payment.html',{'form':form,'sum':sum})
+            
+        
+        else:
+            form = PaymentForm(initial = {'username':request.user,'email':request.user.email,'amount':sum})
+            return render(request,'payment.html',{'form':form,'sum':sum})
+    else:
+        return redirect('login')
+    
+def verify(request, ref:str):
+    payment = get_object_or_404(Payment, ref=ref)
+    verified = payment.verify_payment()
+
+    if verified:
+        messages.success(request, f'{payment.amount} paid sucessfully')
+        customer = request.session.get(User)
+        cart = Cart(request)
+        proof = request.FILES.get('proof')
+        # product = Product.objects.get(id=request.session.get('cart').items[1])
+        # print(int(product.product_id))
+        for key,value in request.session.get('cart').items():
+        
+
+        # for product in product:
+            products = Product.objects.filter(id=value['product_id'])
+            for i in products:
+                order = Order.objects.create(customer=User(id=request.user.id),
+                                product=i,
+                                price=float(value['price']),
+                                address=payment.address,
+                                image = proof,
+                                phone=payment.phone,
+                                status = True,
+                                quantity=value['quantity']),
+                                
+                # order.save()
+        request.session['cart'] = {}
+        return render(request, "success.html")
+    else:
+        messages.success(request, f'{payment.amount} wasnt sucessfully')
+    
+    return redirect('payment')
