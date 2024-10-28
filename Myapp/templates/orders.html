@@ -8,8 +8,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>DeliTaste</title>
-    <meta name="description" content="Delitaste - Food delivery and Restaurant HTML Template" />
+    <title>Fav Taste</title>
+    <meta name="description" content="Fav Taste - Food delivery and Restaurant HTML Template" />
     <meta name="author" content="George_Fx">
     <meta name="keywords" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -46,7 +46,7 @@
                 <div class="header-content d-flex flex-wrap align-items-center">
                     <div class="logo">
                         <a href="{% url 'home' %}" title="">
-                            <img src="{% static 'assets/images/logo.png' %}" alt="">
+                            <img src="{% static 'assets/images/logo.png' %}" style="height:105px" style="height:105px" alt="">
                         </a>
                     </div><!--logo end-->
                     <nav>
@@ -130,7 +130,17 @@
                 </div><!--pager-head end-->
             </div>
         </section><!--pager-section end-->
-
+        {% for message in messages %}
+                        
+                <div class="container-flui p-0">
+                <div class="alert {{ message.tags }} alert-dismissible" role="alert" >
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="True">&times;</span>
+                    </button>
+                    {{ message }}
+                </div>
+                </div>
+                {% endfor %}
         <section class="sec-block">
             <div class="container">
                 <div class="cart-page">
@@ -149,7 +159,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for order in orders %}
+                            {% for order in orders reversed %}
                             <tr style="color:black;margin:2px !important">
                                 <td>{{forloop.counter}}</td>
                                 <td style="color:black;margin:2px"><img style="height: 80px;" class="rounded-circle" src="{{order.product.image.url}}" alt=""></td>
@@ -200,7 +210,7 @@
             <div class="row align-items-center">
                 <div class="col-lg-3 col-md-6">
                     <div class="widget widget-about">
-                        <img src="{% static 'assets/images/logo.png' %}" alt="">
+                        <img src="{% static 'assets/images/logo.png' %}" style="height:105px" alt="">
                         <h4>Working schedule</h4>
                         <p>Mon - Sat:  9:00 am - 10:00 pm <br /> Sun:  10:00 am - 8:00 pm</p>
                     </div><!--widget-about end-->
@@ -229,7 +239,7 @@
             <div class="row align-items-center">
                 <div class="col-lg-6">
                     <div class="copyright">
-                        <p>© All Rights Reserved. DeliTaste 2023</p>
+                        <p>© All Rights Reserved. Fav Taste {% now 'Y' %}</p>
                     </div><!--copyright end-->
                 </div>
               
@@ -251,5 +261,18 @@ $(document).ready(function () {
     $('#example').DataTable();
 });
 </script>   
+<script>
+    $(document).ready(function() {
+        // messages timeout for 10 sec 
+        setTimeout(function() {
+            $('.container-flui').fadeOut('slow');
+        }, 10000); // <-- time in milliseconds, 1000 =  1 sec
+
+        // delete message
+        $('.del-msg').live('click',function(){
+            $('.del-msg').parent().attr('style', 'display:none;');
+        })
+    });
+</script>
 </body>
 </html>

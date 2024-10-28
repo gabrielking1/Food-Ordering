@@ -8,8 +8,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>DeliTaste</title>
-    <meta name="description" content="Delitaste - Food delivery and Restaurant HTML Template" />
+    <title>Fav Taste</title>
+    <meta name="description" content="Fav Taste - Food delivery and Restaurant HTML Template" />
     <meta name="author" content="George_Fx">
     <meta name="keywords" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -25,9 +25,7 @@
 
 <body>
 
-    {% comment %} <div class="page-loading">
-        <img src="{% static 'assets/images/loader.gif' %}" alt="" />
-    </div><!--page-loading end--> {% endcomment %}
+   
 
     <div class="wrapper">
 
@@ -36,7 +34,7 @@
                 <div class="header-content d-flex flex-wrap align-items-center">
                     <div class="logo">
                         <a href="{% url 'home' %}" title="">
-                            <img src="{% static 'assets/images/logo.png' %}" alt="">
+                           <img src="{% static 'assets/images/logo.png' %}" style="height:105px" alt="">
                         </a>
                     </div><!--logo end-->
                     <nav>
@@ -120,7 +118,7 @@
                     </div>
                     <br>
                     <div style="margin: auto;
-                    width: 50%;
+                    width: auto;
                     border: dashed 1px black;
                     padding: 10px">
                         
@@ -128,25 +126,35 @@
                         <p>{{product.description}}</p>
                         <br>
                         
-                        <strong style="margin-left: 200px;
+                        <strong style="margin-left: auto;
                         color:black;font-size:20px;
                       
                        
                         padding: 10px">${{product.price}}</strong>
-                        <p style="margin-left: 150px;
-                      
-                       
+                        <p style="margin-left: auto;cursor: pointer;                       
                         padding: 10px"><span hx-get="{% url 'cart_add' product.id %}"  title="" class="btn-default gradient-bg half-radius height-2" hx-trigger="click" hx-target= "body">Add to Cart <span></span></span></p>
                     
-
+                       
                         {% comment %} <button class="add-to-cart-btn" data-product-id="{{ product.id }}">Add to Cart</button></p> {% endcomment %}
                     </div>
                 </div><!--restaurant-details end-->
+                <br>
+                {% for message in messages %}
+                        
+                <div class="container-flui p-0">
+                <div class="alert {{ message.tags }} alert-dismissible" role="alert" >
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="True">&times;</span>
+                    </button>
+                    {{ message }}
+                </div>
+                </div>
+                {% endfor %}
             </div>
         </section>
         
         
-
+        
         <section class="sec-block">
             <div class="container">
                 <div class="row">
@@ -178,16 +186,11 @@
                     </div>
                    
                     <div class="col-lg-4">
-                        <div class="sidebar">
+                        <div class="sidebar" id="sidebar">
                             <div class="widget widget-review">
                                 <h3 class="widget-title">Leave a review</h3>
-                                <div class="alert {{ message.tags }} alert-dismissible" role="alert" style="margin-left:500px">
-                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                      <span aria-hidden="true">&times;</span>
-                                    </button>
-                                    {{ message }}
-                                </div>
-                                <form method = "POST">
+                                
+                                <form method = "POST" hx-post = "{% url 'details' product.slug %}"  hx-target= "body">
                                     {% csrf_token %}
                                     <label> Username </label>
 
@@ -242,8 +245,7 @@
                     <div class="row align-items-center">
                         <div class="col-lg-3 col-md-6">
                             <div class="widget widget-about">
-                                <img src="{% static 'assets/images/logo.png' %}" alt="">
-                                <h4>Working schedule</h4>
+                               <img src="{% static 'assets/images/logo.png' %}" style="height:105px" alt="">
                                 <p>Mon - Sat:  9:00 am - 10:00 pm <br /> Sun:  10:00 am - 8:00 pm</p>
                             </div><!--widget-about end-->
                         </div>
@@ -251,23 +253,18 @@
                             <div class="widget widget-contact text-center">
                                 <h2><span>Call us</span>  to make an order!</h2>
                                 <p>Don’t be shy, we don’t bite :)</p>
-                                <strong>+1 654 847 52 25</strong>
+                                <strong>+2347067208917</strong>
                             </div><!--widget-contact end-->
                         </div>
                         <div class="col-lg-3 col-md-6">
                             <div class="widget widget-payment">
                                 <div class="wid-payment">
                                     <h4>Payment Options</h4>
-                                    <img src="{% static 'assets/images/imgs.png' %}" alt="">
+                                    Bank Transfer Either USSD or BANK APP or PAYSTACK
                                 </div>
-                                <div class="wid-payment">
-                                    <h4>Download the app</h4>
-                                    <ul>
-                                        <li><a href="#" title=""><img src="{% static 'assets/images/btn1.png' %}" alt=""></a></li>
-                                        <li><a href="#" title=""><img src="{% static 'assets/images/btn2.png' %}" alt=""></a></li>
-                                    </ul>
-                                </div>
+                                
                             </div><!--widget-payment end-->
+                        </div>><!--widget-payment end-->
                         </div>
                     </div>
                 </div>
@@ -277,7 +274,7 @@
                     <div class="row align-items-center">
                         <div class="col-lg-6">
                             <div class="copyright">
-                                <p>© All Rights Reserved. DeliTaste 2020</p>
+                                <p>© All Rights Reserved. Fav Taste 2023</p>
                             </div><!--copyright end-->
                         </div>
                         <div class="col-lg-6">
@@ -325,6 +322,19 @@
                 });
             });
                 
+    </script>
+    <script>
+        $(document).ready(function() {
+            // messages timeout for 10 sec 
+            setTimeout(function() {
+                $('.container-flui').fadeOut('slow');
+            }, 10000); // <-- time in milliseconds, 1000 =  1 sec
+    
+            // delete message
+            $('.del-msg').live('click',function(){
+                $('.del-msg').parent().attr('style', 'display:none;');
+            })
+        });
     </script>
     </body>
     </html>

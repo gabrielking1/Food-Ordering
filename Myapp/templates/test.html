@@ -1,0 +1,54 @@
+<script src="https://checkout.flutterwave.com/v3.js"></script>
+<form>
+  <div>
+    Your order is ₦2,500
+  </div>
+  <button type="button" id="start-payment-button" onclick="makePayment()">Pay Now</button>
+</form>
+<script>
+  function makePayment() {
+    FlutterwaveCheckout({
+      public_key: "FLWPUBK_TEST-a7a2e7d75ef854f4806744d608676610-X",
+      tx_ref: "txref-DI0NzMx12",
+      amount: 2500,
+      currency: "NGN",
+      payment_options: "card, banktransfer, ussd",
+      meta: {
+        source: "docs-inline-test",
+        consumer_mac: "92a3-912ba-1192a",
+      },
+      customer: {
+        email: "test@mailinator.com",
+        phone_number: "08100000000",
+        name: "Ayomide Jimi-Oni",
+      },
+      customizations: {
+        title: "Flutterwave Developers",
+        description: "Test Payment",
+        logo: "https://checkout.flutterwave.com/assets/img/rave-logo.png",
+      },
+    });
+  }
+</script>
+
+
+
+
+
+
+
+
+<form method="POST" action="https://checkout.flutterwave.com/v3/hosted/pay">
+  <div>
+    Your order is N2,000
+  </div>
+  <input type="hidden" name="public_key" value="FLWPUBK_TEST-02b9b5fc6406bd4a41c3ff141cc45e93-X" />
+  <input type="hidden" name="customer[email]" value="test@mailnator.com" />
+  <input type="hidden" name="customer[name]" value="Ayomide Jimi-Oni" />
+  <input type="hidden" name="tx_ref" value="txref-81323" />
+  <input type="hidden" name="amount" value="2000" />
+  <input type="hidden" name="currency" value="NGN" />
+  <input type="hidden" name="meta[source]" value="docs-html-test" />
+  <br>
+  <button type="submit" id="start-payment-button">Pay Now</button>
+</form>

@@ -17,6 +17,7 @@ class ProductAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 # admin.site.register(Product, ProductAdmin)
 
+@admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     def marked_seen(self, request, queryset):
         for obj in queryset:
@@ -36,13 +37,23 @@ class OrderAdmin(admin.ModelAdmin):
                 
             
     def image_tag(self, obj):
-        return format_html('<img src="{}" width="150" height="150"/>'.format(obj.image.url))
+        default_image_url = '/Myapp/succ.jpg'
+        c = []
+        if obj.image:
+            return format_html('<img src="{}" width="150" height="150"/>'.format(obj.image.url))
+        # obj.image.url
+        else:
+
+            return format_html('<img src="{}" width="150" height="150"/>'.format(default_image_url))
 
     image_tag.short_description = 'Image'
     
     
     
-    list_display = ('product', 'status','image_tag',)
+    list_display = ('product', 'status',
+                    'image_tag',
+                    )
+    search_fields = ("customer__username__icontains", )
     
     actions = [marked_seen]
 
@@ -56,6 +67,11 @@ class FeedbackAdmin(admin.ModelAdmin):
 class RatingAdmin(admin.ModelAdmin):
     list_display = ('rating',)
 
-admin.site.register(Order, OrderAdmin)
+# @admin.register(Order)
+# class OrderAdmin(admin.ModelAdmin):
+#     list_display = ('customer','product','price',)
+#     search_fields = ("customer__username__icontains", )
+
 admin.site.register(Rating, RatingAdmin)
 admin.site.register(Payment)
+# admin.site.register(Order, OrderAdmin)

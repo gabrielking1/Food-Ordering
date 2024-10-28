@@ -9,8 +9,14 @@ from star_ratings.models import Rating
 from django.db.models import Avg
 import secrets
 from .paystack import Paystack
+import requests
 
+import logging
+
+logger = logging.getLogger(__name__)
 # Create your models here.
+
+
 class Category(models.Model):
 
     choice = models.CharField(max_length = 15)
@@ -65,11 +71,12 @@ class Order(models.Model):
     quantity = models.IntegerField(default=1)
     price = models.IntegerField()
     address = models.CharField (max_length=50)
-    image = models.ImageField(upload_to='proof/')
+    image = models.ImageField(upload_to='proof/', blank=True, default="/proof/succ.jpg")
     phone = models.CharField (max_length=50)
     date = models.DateTimeField (auto_now=True)
     
     status = models.BooleanField (default=False)
+    # delivered =  models.BooleanField (default=False)
 
     def placeOrder(self):
         self.save()
@@ -82,34 +89,34 @@ class Order(models.Model):
         return str(self.product.name)
     
 
-class Orders(models.Model):
-    product = models.ForeignKey(Product,
-                                on_delete=models.CASCADE)
-    customer = models.ForeignKey(User,
-                                 on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=1)
-    price = models.IntegerField()
-    address = models.CharField (max_length=50)
-    image = models.ImageField(upload_to='proof/' ,null = True, blank= True )
-    phone = models.CharField (max_length=50)
-    date = models.DateTimeField (auto_now=True)
+# class Orders(models.Model):
+#     product = models.ForeignKey(Product,
+#                                 on_delete=models.CASCADE)
+#     customer = models.ForeignKey(User,
+#                                  on_delete=models.CASCADE)
+#     quantity = models.IntegerField(default=1)
+#     price = models.IntegerField()
+#     address = models.CharField (max_length=50)
+#     image = models.ImageField(upload_to='proof/' ,null = True, blank= True )
+#     phone = models.CharField (max_length=50)
+#     date = models.DateTimeField (auto_now=True)
     
-    status = models.BooleanField (default=False)
+#     status = models.BooleanField (default=False)
 
-    def placeOrder(self):
-        self.save()
+#     def placeOrder(self):
+#         self.save()
 
-    @staticmethod
-    def get_orders_by_customer(customer_id):
-        return Order.objects.filter(customer=customer_id).order_by('-date')
+#     @staticmethod
+#     def get_orders_by_customer(customer_id):
+#         return Order.objects.filter(customer=customer_id).order_by('-date')
     
-    def __str__(self):
-        return str(self.product.name)
+#     def __str__(self):
+#         return str(self.product.name)
     
-    def img_preview(self): 
-        return mark_safe('<img src="/directory/%s" width="150" height="150" />' % {self.image.url})
+#     def img_preview(self): 
+#         return mark_safe('<img src="/directory/%s" width="150" height="150" />' % {self.image.url})
 
-    img_preview.short_description = 'Image'
+#     img_preview.short_description = 'Image'
 
 
 
@@ -118,7 +125,7 @@ class Payment(models.Model):
     amount = models.FloatField()
     ref = models.CharField(max_length=200)
     address = models.CharField (max_length=50)
-   
+    image = models.ImageField(upload_to='proof/', default='/proof/succ.jpg' )
     phone = models.CharField (max_length=50)
     email = models.EmailField()
     verified = models.BooleanField(default=False)
@@ -149,4 +156,35 @@ class Payment(models.Model):
             self.save()
         if self.verified:
             return True
+        return False
+   
+    
+
+
+
+
+
+    
+
+    def verify_flutter(self):
+        url = f'https://api.flutterwave.com/v3/transactions/{self.ref}/verify'
+        headers = {
+            'Authorization': 'FLWPUBK_TEST-a7a2e7d75ef854f4806744d608676610-X'  # Use your secret key here
+        }
+
+        response = requests.get(url, headers=headers)
+        result = response.json()
+
+        print(f"Flutterwave API Response: {result}")  # Log the response
+
+        if 'status' not in result or 'data' not in result:
+            print("Invalid response format.")
+            return False
+
+        if result['status'] == 'success' and result['data']['status'] == 'successful':
+            self.verified = True
+            self.save()
+            return True
+        
+        print("Payment not successful.")
         return False

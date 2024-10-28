@@ -9,8 +9,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>DeliTaste</title>
-    <meta name="description" content="Delitaste - Food delivery and Restaurant HTML Template" />
+    <title>Fav Taste</title>
+    <meta name="description" content="Fav Taste - Food delivery and Restaurant HTML Template" />
     <meta name="author" content="George_Fx">
     <meta name="keywords" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -165,7 +165,7 @@ span.psw {
                 <div class="header-content d-flex flex-wrap align-items-center">
                     <div class="logo">
                         <a href="{% url 'home' %}" title="">
-                            <img src="{% static 'assets/images/logo.png' %}" alt="">
+                           <img src="{% static 'assets/images/logo.png' %}" style="height:105px" alt="">
                         </a>
                     </div><!--logo end-->
                     <nav>
@@ -235,7 +235,17 @@ span.psw {
                 <li><a href="contact.html" title="">Contact Us</a></li>
             </ul>
         </div><!--responsive-mobile-menu end-->
-
+        {% for message in messages %}
+                        
+                <div class="container-flui p-0">
+                <div class="alert {{ message.tags }} alert-dismissible" role="alert" >
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="True">&times;</span>
+                    </button>
+                    {{ message }}
+                </div>
+                </div>
+                {% endfor %}
         <section class="pager-section text-center">
             <div class="fixed-bg bg4"></div>
             <div class="container">
@@ -270,6 +280,7 @@ span.psw {
                                         <img src="{{item.image}}" alt="">
                                         <div class="cart-pro-info">
                                             <h4>{{item.name}}</h4>
+                                            <h4>{{item.product_id}} here</h4>
                                     
                                         </div>
                                     </div>
@@ -279,12 +290,12 @@ span.psw {
                                         <div class="price" style="text-align:center;margin:3px;color:black">
                                             
                                             {%if item.quantity > 0 %}
-                                            <span hx-get="{% url 'item_decrement' item.product_id %}" hx-trigger="click" class="increment" hx-target= "body" style="text-decoration:none;float:left" >
+                                            <span hx-get="{% url 'item_decrement' item.product_id %}" hx-trigger="click" class="increment" hx-target= "body" style="text-decoration:none;float:left;cursor: pointer;" >
                                                 <i class="fa fa-minus"></i>
                                             </span>
                                             {%endif%}
                                             {{item.quantity}}
-                                            <span hx-get="{% url 'item_increment' item.product_id %}" hx-trigger="click" class="increment" hx-target= "body" style="text-decoration:none;float:right" >
+                                            <span hx-get="{% url 'item_increment' item.product_id %}" hx-trigger="click" class="increment" hx-target= "body" style="text-decoration:none;float:right;cursor: pointer;" >
                                                 <i class="fa fa-plus"></i>
                                             </span>
                                                 
@@ -330,10 +341,8 @@ span.psw {
                             <div class="price-table">
                                 <ul>
                                      <li style="color:black">
-                                       Bank Transfer<br>
-                                       Account number  0156637353<br>
-                                       Account name Falade Gbenga  <br>
-                                       Bank name : GT Bank 
+                                       <h2> Local Bank Transfer </h2>
+                                       <br>
 
                                     </li>
                                     {% comment %} <li>
@@ -345,8 +354,12 @@ span.psw {
                                         <span class="total-price">${{sum}}</span>
                                     </li>
                                 </ul>
-                                <button onclick="document.getElementById('id01').style.display='block'" style="width:auto;" class="btn-default text-center w-100">Check Out</button>
-                                
+                                {% if request.user.is_authenticated %}
+                                <button onclick="document.getElementById('id01').style.display='block'" style="width:auto;" class="btn-default text-center w-100">Pay Now</button>
+                                {%else%}
+                                <h3 class="btn-default text-center w-100"><a href = "/login"> log in to continue </a></h3>
+                               
+                                {%endif%}
                             </div><!--price-table end-->
                         </div>
                         <div class="col-lg-5">
@@ -371,8 +384,14 @@ span.psw {
                                         <span class="total-price">${{sum}}</span>
                                     </li>
                                 </ul>
-                                
+                                {% if request.user.is_authenticated %}
+                                <a href = "/flutterr/" > flutter </a>
+                                <button type="button" onclick="document.getElementById('id03').style.display='block'">Pay Now</button>
                                 <button onclick="document.getElementById('id00').style.display='block'" style="width:auto;" class="btn-default text-center w-100">Pay Now</button>
+                                {%else%}
+                                <h3 class="btn-default text-center w-100"><a href = "/login"> log in to continue </a></h3>
+                               
+                                {%endif%}
                             </div><!--price-table end-->
                         </div>
                     </div>
@@ -421,8 +440,29 @@ span.psw {
                 </form>
             </div>
         </div>
+        <div class="container">
+            <div id="id03" class="modal" >
+                <span onclick="document.getElementById('id00').style.display='none'" class="close" title="Close Modal">&times;</span>
+                <form class="modal-content" action="/flutter/" method='post'>
+                    {% csrf_token %}
+                    <div class="container">
+                    <h1>Online Payment Flutter</h1>
+                    <p>Please make your payment here.</p>
+                    <hr>
+                    {{form|crispy}}
+                    
+                   
+                     
         
-
+                    <div class="clearfix">
+                      <button type="submit" class="signupbtn" style="width:auto">Pay Now</button>
+                        <button type="button" onclick="document.getElementById('id03').style.display='none'" class="cancelbtn">Cancel</button>
+                        
+                    </div>
+                    </div>
+                </form>
+            </div>
+        </div>
     <div id="id00" class="modal" >
         <span onclick="document.getElementById('id00').style.display='none'" class="close" title="Close Modal">&times;</span>
         <form class="modal-content" action="/payment/" method='post'>
@@ -465,7 +505,7 @@ span.psw {
             <div class="row align-items-center">
                 <div class="col-lg-3 col-md-6">
                     <div class="widget widget-about">
-                        <img src="{% static 'assets/images/logo.png' %}" alt="">
+                       <img src="{% static 'assets/images/logo.png' %}" style="height:105px" alt=""> 
                         <h4>Working schedule</h4>
                         <p>Mon - Sat:  9:00 am - 10:00 pm <br /> Sun:  10:00 am - 8:00 pm</p>
                     </div><!--widget-about end-->
@@ -481,7 +521,7 @@ span.psw {
                     <div class="widget widget-payment">
                         <div class="wid-payment">
                             <h4>Payment Options</h4>
-                            Bank Transfer Either USSD or BANK APP
+                            Bank Transfer Either USSD or BANK APP or PAYSTACK
                         </div>
                         
                     </div><!--widget-payment end-->
@@ -494,7 +534,7 @@ span.psw {
             <div class="row align-items-center">
                 <div class="col-lg-6">
                     <div class="copyright">
-                        <p>© All Rights Reserved. DeliTaste 2023</p>
+                        <p>© All Rights Reserved. Fav Taste {% now 'Y' %}</p>
                     </div><!--copyright end-->
                 </div>
               
@@ -505,11 +545,30 @@ span.psw {
 
 </div><!--wrapper end-->
 
+
+
+
+
+
 <script src="{% static 'assets/js/jquery.min.js' %}"></script> 
 <script src="{% static 'assets/js/bootstrap.min.js' %}"></script>
 <script src="{% static 'assets/js/lib/slick/slick.js' %}"></script>
 <script src="{% static 'assets/js/isotope.js' %}"></script>
 <script src="{% static 'assets/js/scripts.js' %}"></script>
 <script src="https://unpkg.com/htmx.org@1.9.0" integrity="sha384-aOxz9UdWG0yBiyrTwPeMibmaoq07/d3a96GCbb9x60f3mOt5zwkjdbcHFnKH8qls" crossorigin="anonymous"></script>
+<script src="https://checkout.flutterwave.com/v3.js"></script>
+<script>
+    $(document).ready(function() {
+        // messages timeout for 10 sec 
+        setTimeout(function() {
+            $('.container-flui').fadeOut('slow');
+        }, 10000); // <-- time in milliseconds, 1000 =  1 sec
+
+        // delete message
+        $('.del-msg').live('click',function(){
+            $('.del-msg').parent().attr('style', 'display:none;');
+        })
+    });
+</script>
 </body>
 </html>

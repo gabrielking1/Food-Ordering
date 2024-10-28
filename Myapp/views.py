@@ -39,8 +39,9 @@ def home(request):
 def cart_add(request, id):
     cart = Cart(request)
     product = Product.objects.get(id=id)
-    kent = product.slug
+    kent = product.name
     cart.add(product=product)
+    messages.success(request, f"{product.name} added successfully ")
     print(cart)
     return HttpResponseRedirect(reverse("details",args={product.slug}))
 
@@ -82,7 +83,7 @@ def cart_clear(request):
 
 # @login_required(login_url="login")
 def cart_detail(request):
-    # if request.user.is_authenticated:
+    
     sum = 0.0
     cart = Cart(request)
     for key,value in request.session.get('cart').items():
@@ -92,18 +93,22 @@ def cart_detail(request):
         sum+=c
         print("this is total sum",sum)
     form = PaymentForm(request.POST)
-
-    if form.is_valid():
-        payment = form.save()
+    if request.user.is_authenticated:
+        if form.is_valid():
+            payment = form.save()
+            
+            
+            return render(request, 'make-pay.html', {'payment':payment,'amount_value': payment.amount_value()})
+            
         
-        
-        return render(request, 'make-pay.html', {'payment':payment,'amount_value': payment.amount_value()})
-        
-    
+        else:
+            
+            form = PaymentForm(initial = {'username':request.user,'email':request.user.email,'amount':sum})
+            return render(request,'cart.html',{'form':form,'sum':sum})
     else:
-        
-        form = PaymentForm(initial = {'username':request.user,'email':request.user.email,'amount':sum})
-        return render(request,'cart.html',{'form':form,'sum':sum})
+            
+            form = PaymentForm(initial = {'username':request.user,'amount':sum})
+            return render(request,'cart.html',{'form':form,'sum':sum})
         # html = render_to_string('cart.html', {'cart': cart,'form':form,'sum':sum})
         # data = {'html': html, 'total': cart.get_total_price()}
         # return JsonResponse(data)
@@ -123,17 +128,20 @@ def register(request):
             form.save()
             username = form.cleaned_data['username']
             password = form.cleaned_data['password1']
-            email = form.cleaned_data['email']
-            if User.objects.filter(email=email):
-                messages.error(request, 'email already taken ')
-                return redirect('register')
-            elif User.objects.filter(username=username).exists():
-                messages.error(request, 'username already taken ')
-                return redirect('register')
-            else:
-                user = authenticate(username = username,password = password)
-                auth.login(request, user)
-                return redirect('home')
+            # email = form.cleaned_data['email']
+            # if User.objects.filter(email=email).exists():
+            #     messages.error(request, 'email already taken ')
+            #     return redirect('register')
+            # elif User.objects.filter(username=username).exists():
+            #     messages.error(request, 'username already taken ')
+            #     return redirect('register')
+            # else:
+                
+            user = authenticate(username = username,password = password)
+            auth.login(request, user)
+            
+            return redirect('home')
+            
          
         else:
             return render(request,'signin.html',{'form':form})
@@ -232,7 +240,7 @@ def checkout(request):
                     order.save()
             request.session['cart'] = {}
 
-        return redirect('cart-detail')
+        return redirect('order')
     else:
         messages.error(request,'you much login to checkout')
         return redirect('login')
@@ -307,35 +315,124 @@ def payment(request):
         return redirect('login')
     
 def verify(request, ref:str):
-    payment = get_object_or_404(Payment, ref=ref)
-    verified = payment.verify_payment()
+    if request.user.is_authenticated:
+        payment = get_object_or_404(Payment, ref=ref)
+        verified = payment.verify_payment()
+      
 
-    if verified:
-        messages.success(request, f'{payment.amount} paid sucessfully')
-        customer = request.session.get(User)
-        cart = Cart(request)
-        proof = request.FILES.get('proof')
-        # product = Product.objects.get(id=request.session.get('cart').items[1])
-        # print(int(product.product_id))
-        for key,value in request.session.get('cart').items():
+        if verified:
+            messages.success(request, f'{payment.amount} paid sucessfully')
+            customer = request.session.get(User)
+            cart = Cart(request)
+            proof = request.FILES.get('proof')
+           
+            for key,value in request.session.get('cart').items():
+            
+
+            # for product in product:
+                products = Product.objects.filter(id=value['product_id'])
+                for i in products:
+                    order = Order.objects.create(customer=User(id=request.user.id),
+                                    product=i,
+                                    price=float(value['price']),
+                                    address=payment.address,
+                                    image = proof,
+                                    phone=payment.phone,
+                                    status = True,
+                                    quantity=value['quantity']),
+                                    
+                    # order.save()
+            request.session['cart'] = {}
+            # return render(request, "success.html")
+            return redirect('order')
+        else:
+            messages.success(request, f'{payment.amount} wasnt sucessfully')
         
-
-        # for product in product:
-            products = Product.objects.filter(id=value['product_id'])
-            for i in products:
-                order = Order.objects.create(customer=User(id=request.user.id),
-                                product=i,
-                                price=float(value['price']),
-                                address=payment.address,
-                                image = proof,
-                                phone=payment.phone,
-                                status = True,
-                                quantity=value['quantity']),
-                                
-                # order.save()
-        request.session['cart'] = {}
-        return render(request, "success.html")
+        return redirect('payment')
     else:
-        messages.success(request, f'{payment.amount} wasnt sucessfully')
+        messages.error(request,"you aint logged in ")
+        return redirect('login')
+
+
+def flutter(request):
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+
+            form = PaymentForm(request.POST)
     
-    return redirect('payment')
+            if form.is_valid():
+                payment = form.save()
+             
+                
+                return render(request, 'flutter.html', {'payment':payment,'amount_value': payment.amount_value()})
+                
+            
+            else:
+                return render(request,'payment.html',{'form':form,'sum':sum})
+            
+        
+        else:
+            form = PaymentForm(initial = {'username':request.user,'email':request.user.email,'amount':sum})
+          
+    else:
+        return redirect('login')
+    
+
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+
+def flutverify(request, ref):
+    if request.user.is_authenticated:
+        # Fetch the Payment using the `ref` from the URL
+        payment = get_object_or_404(Payment, ref=ref)
+
+        # Get the status from the query parameters
+        status = request.GET.get('status')
+
+        if status == 'completed':
+            # If status is completed, mark the payment as verified
+            payment.verified = True
+            payment.save()
+
+            messages.success(request, f'{payment.amount} paid successfully')
+
+            # Process the order based on the cart
+            customer = request.session.get(User)
+            cart = Cart(request)
+            proof = request.FILES.get('proof')
+
+            for key, value in request.session.get('cart').items():
+                products = Product.objects.filter(id=value['product_id'])
+                for i in products:
+                    Order.objects.create(
+                        customer=User(id=request.user.id),
+                        product=i,
+                        price=float(value['price']),
+                        address=payment.address,
+                        image=proof,
+                        phone=payment.phone,
+                        status=True,
+                        quantity=value['quantity']
+                    )
+
+            # Clear the cart after order creation
+            request.session['cart'] = {}
+
+            return redirect('order')
+        else:
+            messages.error(request, f'{payment.amount} was not successful')
+            return redirect('cart-detail')
+    else:
+        messages.error(request, "You are not logged in.")
+        return redirect('login')
+
+# def webhooj(request)
+
+
+
+
+def flutterr(request):
+      return render(request,'flutterr.html')
+
+def test(request):
+    return render(request, 'test.html')

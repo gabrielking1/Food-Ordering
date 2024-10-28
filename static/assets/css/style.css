@@ -273,11 +273,11 @@ a:hover {
 }
 
 .bg3 {
-  background-image: url(../images/footer-bg.jpg);
+  background-image: url(../images/back1.jpg);
 }
 
 .bg4 {
-  background-image: url(../images/resources/pager-bg.jpg);
+  background-image: url(../images/resources/Chick.png);
 }
 
 .slick-slide {
@@ -831,7 +831,7 @@ header .menu-btn.active span.bar3 {
 }
 
 .main-banner {
-  background-image: url(../images/resources/banner-img.jpg);
+  background-image: url(../images/resources/back.jpg);
   background-repeat: no-repeat;
   background-size: cover;
   padding: 283px 0 254px;

@@ -8,8 +8,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>DeliTaste</title>
-    <meta name="description" content="Delitaste - Food delivery and Restaurant HTML Template" />
+    <title>Fav Taste</title>
+    <meta name="description" content="Fav Taste - Food delivery and Restaurant HTML Template" />
     <meta name="author" content="George_Fx">
     <meta name="keywords" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -41,8 +41,7 @@
                 <div class="header-content d-flex flex-wrap align-items-center">
                     <div class="logo">
                         <a href="{% url 'home' %}" title="">
-                            <img src="{% static 'assets/images/logo.png' %}" alt="">
-                        </a>
+                           <img src="{% static 'assets/images/logo.png' %}" style="height:105px" alt=""> 
                     </div><!--logo end-->
                     <nav>
                         <ul>
@@ -195,7 +194,7 @@
                     <div class="row align-items-center">
                         <div class="col-lg-3 col-md-6">
                             <div class="widget widget-about">
-                                <img src="{% static 'assets/images/logo.png' %}" alt="">
+                               <img src="{% static 'assets/images/logo.png' %}" style="height:105px" alt="">
                                 <h4>Working schedule</h4>
                                 <p>Mon - Sat:  9:00 am - 10:00 pm <br /> Sun:  10:00 am - 8:00 pm</p>
                             </div><!--widget-about end-->
@@ -224,7 +223,7 @@
                     <div class="row align-items-center">
                         <div class="col-lg-6">
                             <div class="copyright">
-                                <p>© All Rights Reserved. DeliTaste 2023</p>
+                                <p>© All Rights Reserved. Fav Taste {% now 'Y' %}</p>
                             </div><!--copyright end-->
                         </div>
                       

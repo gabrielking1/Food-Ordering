@@ -25,7 +25,11 @@ urlpatterns = [
     path('delete/<str:product_id>', views.delete, name = 'delete'),
     path('ratings/', include('star_ratings.urls', namespace='ratings')),
     path('payment/', views.payment, name = "payment"),
-    path('<str:ref>', views.verify, name="verify")
+    path('flutter/', views.flutter, name = 'flutter'),
+    path('flutterr/', views.flutterr, name = 'flutterr'),
+    path('<str:ref>', views.verify, name="verify"),
+    path('flutverify/<str:ref>/', views.flutverify, name="flutverify"),
+    path('test/', views.test, name="test")
     
 ]
 

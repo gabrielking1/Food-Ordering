@@ -4,12 +4,11 @@
 <html lang="en">
 
 
-<!-- Mirrored from my-space.space/deli-taste/index.html by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 23 Dec 2022 01:52:52 GMT -->
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>DeliTaste</title>
-    <meta name="description" content="Delitaste - Food delivery and Restaurant HTML Template" />
+    <title>Fav Taste</title>
+    <meta name="description" content="Fav Taste - Food delivery and Restaurant HTML Template" />
     <meta name="author" content="George_Fx">
     <meta name="keywords" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -41,7 +40,7 @@
                 <div class="header-content d-flex flex-wrap align-items-center">
                     <div class="logo">
                         <a href="{% url 'home' %}" title="">
-                            <img src="{% static 'assets/images/logo.png' %}" alt="">
+                           <img src="{% static 'assets/images/logo.png' %}" style="height:105px" alt=""> 
                         </a>
                     </div><!--logo end-->
                     <nav>
@@ -116,12 +115,9 @@
         <section class="main-banner">
             <div class="container">
                 <div class="banner-text">
-                    <h2>We deliver the taste of life</h2>
-                    <span class="semi-bold text-capitalize">Get it delivered right to your doorstep.</span>
-                    <form>
-                        <input type="text" name="location" class="half-radius" placeholder="Enter your dishes">
-                        <button type="submit" class="btn-default">Search Food<span></span></button>
-                    </form>
+                    <h2>Experience the essence of life.</h2>
+                    <span class="semi-bold text-capitalize">Conveniently delivered to your doorstep.</span>
+                    
                 </div><!--banner-text end-->
             </div>
         </section><!--main-banner end-->
@@ -204,13 +200,15 @@
             </div>
         </section><!--our-proptz-section end-->
 
-        <section class="sec-block">
+        <section class="sec-block" >
             <div class="fixed-bg bg1"></div>
-            <div class="container">
-                <div class="promotion">
+            <div class="container" style="margin-left:40px">
+                <div class="promotion" style="text-align:left">
                     <h2 class="text-capitalize">Make Your first order and get <span>50% off</span></h2>
                     <span class="text-capitalize semi-bold">Get it delivered right to your door.</span>
-                    <p>If you order food delivery from us for the first time then we have a gift - 50% discount for you on the first order. You just need to register and order your favorite food.</p>
+                    <p class="text-capitalize" style="color:white">If you order food delivery from us for the <br>first time then we have a gift  - 50% discount<br> 
+                        for you on the first order. <br>You just need to register and order your<br>
+                         favorite food.</p>
                     <a href="/restaurants" title="" class="btn-default">Order Products <span></span></a>
                 </div><!--promotion end-->
             </div>
@@ -318,27 +316,7 @@
         
         
 
-        <section class="sec-block pb-0">
-            <div class="container">
-                <div class="newsletter-sec">
-                    <div class="row align-items-center">
-                        <div class="col-lg-4">
-                            <div class="newsletter-text">
-                                <h2>Newsletter</h2>
-                                <p>Don’t miss promotions and discounts.</p>
-                            </div><!--newsletter-text end-->
-                        </div>
-                        <div class="col-lg-8">
-                            <form>
-                                <input type="email" name="email" class="half-radius" placeholder="Enter your email">
-                                <button type="submit" class="btn-default">Subscribe <span></span></button>
-                            </form>
-                        </div>
-                    </div>
-                    <h4 class="section_title">Subscribe</h4>
-                </div><!--newsletter-sec end-->
-            </div>
-        </section><!--newsletter end-->
+        
 
         <br>
         <br>
@@ -360,7 +338,7 @@
                     <div class="row align-items-center">
                         <div class="col-lg-3 col-md-6">
                             <div class="widget widget-about">
-                                <img src="{% static 'assets/images/logo.png' %}" alt="">
+                               <img src="{% static 'assets/images/logo.png' %}" style="height:105px" alt="">
                                 <h4>Working schedule</h4>
                                 <p>Mon - Sat:  9:00 am - 10:00 pm <br /> Sun:  10:00 am - 8:00 pm</p>
                             </div><!--widget-about end-->
@@ -389,7 +367,7 @@
                     <div class="row align-items-center">
                         <div class="col-lg-6">
                             <div class="copyright">
-                                <p>© All Rights Reserved. DeliTaste 2023</p>
+                                <p>© All Rights Reserved. Fav Taste {% now 'Y' %}</p>
                             </div><!--copyright end-->
                         </div>
                       
